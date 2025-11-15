@@ -6,8 +6,17 @@
   <title>🖊Air Flow Pvt. Ltd. Typing Test</title>  
   <link rel="icon" type="image/png" href="https://airflow.in/wp-content/uploads/2021/12/cropped-AIR-1.png" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* 🔒 Disable text select */
+    body, #paragraph, #typing-box {
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
       background: #e6f4ff;
@@ -52,7 +61,7 @@
       padding: 30px;
       min-height: 80vh;
     }
-       .left {
+    .left {
       flex: 0 0 40%;
       display: flex;
       justify-content: center;
@@ -119,24 +128,21 @@
       font-weight: bold;
       margin-bottom: 10px;
     }
-    .highlight {
-      background-color: yellow;
-    }
-    .correct {
-      color: green;
-    }
-    .incorrect {
-      color: red;
-    }
+    .highlight { background-color: yellow; }
+    .correct { color: green; }
+    .incorrect { color: red; }
   </style>
 </head>
+
 <body>
+
+<!-- HEADER -->
 <div class="header">
   <img src="https://airflow.in/wp-content/uploads/2021/12/cropped-AIR-1.png" alt="Logo" />
   <h2>🖋Air Flow Pvt. Ltd. Typing Speed Test</h2>
 </div>
 
-<!-- Login Page -->
+<!-- LOGIN -->
 <div class="login-container" id="loginPage">
   <div class="left">
     <img 
@@ -154,18 +160,46 @@
   </div>
 </div>
 
-<!-- Typing Test Area -->
+<!-- TEST AREA -->
 <div class="container" id="test-area">
   <div class="timer" id="timer">01:00</div>
   <div id="paragraph"></div>
   <textarea id="typing-box" disabled placeholder="Start typing here..."></textarea>
 </div>
 
-<!-- Results -->
+<!-- RESULTS -->
 <div class="container" id="results"></div>
-<!-- <div class="container"><button id="finalSubmitBtn" onclick="submitToSheet()">Submit</button></div> -->
 
 <script>
+
+  /* ---------------------------------------------------
+     🔒 GLOBAL PROTECTION: Disable copy, paste, cut
+  ----------------------------------------------------*/
+  document.addEventListener("copy", e => e.preventDefault());
+  document.addEventListener("cut", e => e.preventDefault());
+  document.addEventListener("paste", e => e.preventDefault());
+
+  /* 🔒 Disable Right Click */
+  document.addEventListener("contextmenu", e => e.preventDefault());
+
+  /* 🔒 Block CTRL+C / CTRL+V / CTRL+X */
+  document.addEventListener("keydown", function (e) {
+    if ((e.ctrlKey || e.metaKey) && ["c","v","x","a"].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+    }
+  });
+
+  /* ---------------------------------------------------
+     🔒 Disable paste in typing box only
+  ----------------------------------------------------*/
+  document.addEventListener("DOMContentLoaded", () => {
+    const typingBox = document.getElementById("typing-box");
+
+    typingBox.addEventListener("paste", (e) => {
+      e.preventDefault();
+      return false;
+    });
+  });
   const paragraphs = [
     "Artificial Intelligence, also called AI, is a smart technology that helps machines think and act like humans. AI can learn from data and improve over time. For example, when you use your phone, AI helps in face unlock, voice assistants like Siri or Google Assistant, and even in typing suggestions. AI is not magic, but a way to teach computers to do tasks that need human intelligence.\nToday, AI is used almost everywhere. On social media, AI suggests posts and friends you may like. In shopping apps, AI shows products based on your interest. AI helps doctors find diseases faster by looking at medical images. It is also used in self-driving cars that can sense traffic and decide where to go. Many chatbots on websites are powered by AI to answer our questions quickly.\nAI saves time and makes life easy. It can do boring and repeated work quickly. AI can read large data and give useful results which humans may miss. In factories, AI robots help in making products faster and safer. AI also helps farmers to know when to water crops and protect them from pests. AI is becoming part of our daily life slowly but strongly.\nIn the future, AI will bring even more changes. Some people worry AI may take away some jobs, but it can also create new jobs. It is important to learn how AI works so we can use it properly. AI is a tool, and humans must use it wisely to help society.",
     "Cloud Computing is a technology where we can store and use data and software on the internet instead of our computer’s hard disk. It is called “cloud” because we can access it from anywhere, just like seeing clouds in the sky. For example, when you save photos on Google Drive or watch movies on Netflix, you are using cloud computing.\nCloud computing saves space on our phones and computers. It also keeps data safe even if your device breaks. People can share documents easily using cloud apps like Google Docs. Big companies use cloud to keep their data and to run websites faster. The cloud can also give more storage and power when needed, which saves money.\nStudents use the cloud to do projects together, store notes, and submit homework online. Teachers use it to share study materials with students anytime. Apps like YouTube, Gmail, Facebook, and Instagram all run on cloud. Even banks use cloud to store customer details safely.\nIn the future, more people and companies will use the cloud because it is fast, cheap, and flexible. But it is important to protect cloud data from hackers. Learning about cloud computing is useful for students because it is part of almost every business today.",
