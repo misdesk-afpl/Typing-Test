@@ -371,62 +371,73 @@ document.getElementById("results").innerHTML = `
   };
 }
 function submitToSheet() {
-  const formBaseURL = "https://docs.google.com/forms/d/e/13XHzNBI2k9CG2-G44bwRvWUQJUom1ifUi7Gih1B4A2I/formResponse";
+  if (!window.resultData) {
+    console.error("resultData missing");
+    return;
+  }
 
-  const params = new URLSearchParams({
-    "entry.1217074693": window.resultData.name,
-    "entry.300810902": window.resultData.email,
-    "entry.613478765": window.resultData.wpm,
-    "entry.1693580835": window.resultData.accuracy,
-    "entry.947163117": window.resultData.totalWords,
-    "entry.1771123525": window.resultData.correctWords
-  });
+  // Prevent double submit
+  if (sessionStorage.getItem("submitted")) return;
+  sessionStorage.setItem("submitted", "true");
 
-  // Data submit (background me)
-  fetch(`${formBaseURL}?${params.toString()}`, {
+  const formBaseURL =
+    "https://docs.google.com/forms/d/e/13XHzNBI2k9CG2-G44bwRvWUQJUom1ifUi7Gih1B4A2I/formResponse";
+
+  const params = new URLSearchParams();
+  params.append("entry.1217074693", window.resultData.name);
+  params.append("entry.300810902", window.resultData.email);
+  params.append("entry.613478765", window.resultData.wpm);
+  params.append("entry.1693580835", window.resultData.accuracy);
+  params.append("entry.947163117", window.resultData.totalWords);
+  params.append("entry.1771123525", window.resultData.correctWords);
+
+  // ✅ Correct submit
+  fetch(formBaseURL, {
     method: "POST",
     mode: "no-cors",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
-    }
+    },
+    body: params.toString()
   });
 
-  // Success popup create
+  // ✅ Success popup
   const popup = document.createElement("div");
   popup.innerText = "✅ Successfully Submitted!";
-  popup.style.position = "fixed";
-  popup.style.top = "50%";
-  popup.style.left = "50%";
-  popup.style.transform = "translate(-50%, -50%)";
-  popup.style.background = "linear-gradient(to right, #2dd4bf, #3b82f6)";
-  popup.style.color = "white";
-  popup.style.padding = "20px 30px";
-  popup.style.fontSize = "20px";
-  popup.style.fontWeight = "bold";
-  popup.style.borderRadius = "10px";
-  popup.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
-  popup.style.zIndex = "9999";
-  popup.style.opacity = "1";
-  popup.style.transition = "opacity 1s ease";
-
+  popup.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(to right, #2dd4bf, #3b82f6);
+    color: white;
+    padding: 20px 30px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 1s ease;
+  `;
   document.body.appendChild(popup);
 
-  // 2 sec me fade out
+  // Fade out
   setTimeout(() => {
     popup.style.opacity = "0";
   }, 2000);
 
-  // 3 sec baad remove popup aur login page dikhao
+  // Remove popup & go to login
   setTimeout(() => {
     popup.remove();
-    document.getElementById('results').style.display = 'none';
-    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById("results").style.display = "none";
+    document.getElementById("loginPage").style.display = "flex";
   }, 3000);
 
-  // 5 sec baad refresh
+  // Final reset (after everything)
   setTimeout(() => {
     location.reload();
-  }, 1000);
+  }, 3500);
 }
 
 </script>
