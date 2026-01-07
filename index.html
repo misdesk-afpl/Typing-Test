@@ -6,17 +6,8 @@
   <title>🖊Air Flow Pvt. Ltd. Typing Test</title>  
   <link rel="icon" type="image/png" href="https://airflow.in/wp-content/uploads/2021/12/cropped-AIR-1.png" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
-
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* 🔒 Disable text select */
-    body, #paragraph, #typing-box {
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
     body {
       font-family: 'Poppins', sans-serif;
       background: #e6f4ff;
@@ -63,10 +54,11 @@
     }
     .left {
       flex: 0 0 40%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: auto;
+      background: url('https://static.vecteezy.com/system/resources/previews/001/883/463/original/young-man-using-desktop-computer-sitting-in-chair-with-desk-free-vector.jpg') center/cover no-repeat;
+      height: 400px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     .right {
       flex: 0 0 300px;
@@ -128,28 +120,26 @@
       font-weight: bold;
       margin-bottom: 10px;
     }
-    .highlight { background-color: yellow; }
-    .correct { color: green; }
-    .incorrect { color: red; }
+    .highlight {
+      background-color: yellow;
+    }
+    .correct {
+      color: green;
+    }
+    .incorrect {
+      color: red;
+    }
   </style>
 </head>
-
 <body>
-
-<!-- HEADER -->
 <div class="header">
   <img src="https://airflow.in/wp-content/uploads/2021/12/cropped-AIR-1.png" alt="Logo" />
   <h2>🖋Air Flow Pvt. Ltd. Typing Speed Test</h2>
 </div>
 
-<!-- LOGIN -->
+<!-- Login Page -->
 <div class="login-container" id="loginPage">
-  <div class="left">
-    <img 
-      src="https://static.vecteezy.com/system/resources/previews/001/883/463/original/young-man-using-desktop-computer-sitting-in-chair-with-desk-free-vector.jpg" 
-      alt="Illustration"
-      style="width: 100%; height: auto; border-radius: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-  </div>
+  <div class="left"></div>
   <div class="right">
     <h3>👤Login</h3>
     <input type="text" id="name" placeholder="Your Name" required />
@@ -160,46 +150,18 @@
   </div>
 </div>
 
-<!-- TEST AREA -->
+<!-- Typing Test Area -->
 <div class="container" id="test-area">
   <div class="timer" id="timer">01:00</div>
   <div id="paragraph"></div>
   <textarea id="typing-box" disabled placeholder="Start typing here..."></textarea>
 </div>
 
-<!-- RESULTS -->
+<!-- Results -->
 <div class="container" id="results"></div>
+<!-- <div class="container"><button id="finalSubmitBtn" onclick="submitToSheet()">Submit</button></div> -->
 
 <script>
-
-  /* ---------------------------------------------------
-     🔒 GLOBAL PROTECTION: Disable copy, paste, cut
-  ----------------------------------------------------*/
-  document.addEventListener("copy", e => e.preventDefault());
-  document.addEventListener("cut", e => e.preventDefault());
-  document.addEventListener("paste", e => e.preventDefault());
-
-  /* 🔒 Disable Right Click */
-  document.addEventListener("contextmenu", e => e.preventDefault());
-
-  /* 🔒 Block CTRL+C / CTRL+V / CTRL+X */
-  document.addEventListener("keydown", function (e) {
-    if ((e.ctrlKey || e.metaKey) && ["c","v","x","a"].includes(e.key.toLowerCase())) {
-      e.preventDefault();
-    }
-  });
-
-  /* ---------------------------------------------------
-     🔒 Disable paste in typing box only
-  ----------------------------------------------------*/
-  document.addEventListener("DOMContentLoaded", () => {
-    const typingBox = document.getElementById("typing-box");
-
-    typingBox.addEventListener("paste", (e) => {
-      e.preventDefault();
-      return false;
-    });
-  });
   const paragraphs = [
     "Artificial Intelligence, also called AI, is a smart technology that helps machines think and act like humans. AI can learn from data and improve over time. For example, when you use your phone, AI helps in face unlock, voice assistants like Siri or Google Assistant, and even in typing suggestions. AI is not magic, but a way to teach computers to do tasks that need human intelligence.\nToday, AI is used almost everywhere. On social media, AI suggests posts and friends you may like. In shopping apps, AI shows products based on your interest. AI helps doctors find diseases faster by looking at medical images. It is also used in self-driving cars that can sense traffic and decide where to go. Many chatbots on websites are powered by AI to answer our questions quickly.\nAI saves time and makes life easy. It can do boring and repeated work quickly. AI can read large data and give useful results which humans may miss. In factories, AI robots help in making products faster and safer. AI also helps farmers to know when to water crops and protect them from pests. AI is becoming part of our daily life slowly but strongly.\nIn the future, AI will bring even more changes. Some people worry AI may take away some jobs, but it can also create new jobs. It is important to learn how AI works so we can use it properly. AI is a tool, and humans must use it wisely to help society.",
     "Cloud Computing is a technology where we can store and use data and software on the internet instead of our computer’s hard disk. It is called “cloud” because we can access it from anywhere, just like seeing clouds in the sky. For example, when you save photos on Google Drive or watch movies on Netflix, you are using cloud computing.\nCloud computing saves space on our phones and computers. It also keeps data safe even if your device breaks. People can share documents easily using cloud apps like Google Docs. Big companies use cloud to keep their data and to run websites faster. The cloud can also give more storage and power when needed, which saves money.\nStudents use the cloud to do projects together, store notes, and submit homework online. Teachers use it to share study materials with students anytime. Apps like YouTube, Gmail, Facebook, and Instagram all run on cloud. Even banks use cloud to store customer details safely.\nIn the future, more people and companies will use the cloud because it is fast, cheap, and flexible. But it is important to protect cloud data from hackers. Learning about cloud computing is useful for students because it is part of almost every business today.",
@@ -370,92 +332,65 @@ document.getElementById("results").innerHTML = `
     correctWords
   };
 }
-/* ✅ FINAL SUBMIT FUNCTION */
 function submitToSheet() {
-  console.log("submitToSheet called");
-
-  if (!window.resultData) {
-    alert("Result data missing");
-    console.error("window.resultData is undefined");
-    return;
-  }
-
-  if (sessionStorage.getItem("submitted")) {
-    alert("Already submitted (sessionStorage)");
-    console.log("Submission blocked: already submitted flag present");
-    return;
-  }
-
-  // mark to avoid double-submits
-  sessionStorage.setItem("submitted", "true");
-
-  const formURL = "https://docs.google.com/forms/d/e/1FAIpQLScNrPylqWy3C2y99TZCn0GlKPN4Ja-4usc9FAMHd7T2xQLwcA/formResponse";
+  const formBaseURL = "https://docs.google.com/forms/d/e/1FAIpQLScNrPylqWy3C2y99TZCn0GlKPN4Ja-4usc9FAMHd7T2xQLwcA/formResponse";
 
   const params = new URLSearchParams();
-  params.append("entry.1217074693", window.resultData.name || "");
-  params.append("entry.300810902", window.resultData.email || "");
-  params.append("entry.613478765", window.resultData.wpm || "");
-  params.append("entry.1693580835", window.resultData.accuracy || "");
-  params.append("entry.947163117", window.resultData.totalWords || "");
-  params.append("entry.1771123525", window.resultData.correctWords || "");
+params.append("entry.1217074693", window.resultData.name);
+params.append("entry.300810902", window.resultData.email);
+params.append("entry.613478765", window.resultData.wpm);
+params.append("entry.1693580835", window.resultData.accuracy);
+params.append("entry.947163117", window.resultData.totalWords);
+params.append("entry.1771123525", window.resultData.correctWords);
+  });
 
-  // disable button so user can't spam
-  const submitBtn = document.getElementById('submitBtn');
-  submitBtn.disabled = true;
-  submitBtn.innerText = "Submitting...";
-
-  // Try navigator.sendBeacon first (best for unloads/reloads)
-  try {
-    if (navigator.sendBeacon) {
-      const ok = navigator.sendBeacon(formURL, params);
-      console.log("sendBeacon invoked, returned:", ok);
-      showSuccessAndReload();
-      return;
-    } else {
-      console.log("navigator.sendBeacon not available — falling back to fetch");
-    }
-  } catch (err) {
-    console.warn("sendBeacon threw:", err);
-  }
-
-  // Fallback: fetch with no-cors (won't return readable response, but will hit endpoint)
-  fetch(formURL, {
+  // Data submit (background me)
+  fetch(`${formBaseURL}?${params.toString()}`, {
     method: "POST",
     mode: "no-cors",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: params.toString()
-  }).then(() => {
-    console.log("fetch (no-cors) completed (promise resolved)");
-    showSuccessAndReload();
-  }).catch((err) => {
-    console.error("fetch error:", err);
-    // allow retry by clearing submitted flag and enabling button
-    sessionStorage.removeItem("submitted");
-    submitBtn.disabled = false;
-    submitBtn.innerText = "Submit Result";
-    alert("Submit failed — check console for details");
+    }
   });
-}
 
-/* UI helper */
-function showSuccessAndReload() {
-  const popup = document.createElement('div');
-  popup.id = "popup";
+  // Success popup create
+  const popup = document.createElement("div");
   popup.innerText = "✅ Successfully Submitted!";
+  popup.style.position = "fixed";
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%)";
+  popup.style.background = "linear-gradient(to right, #2dd4bf, #3b82f6)";
+  popup.style.color = "white";
+  popup.style.padding = "20px 30px";
+  popup.style.fontSize = "20px";
+  popup.style.fontWeight = "bold";
+  popup.style.borderRadius = "10px";
+  popup.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
+  popup.style.zIndex = "9999";
+  popup.style.opacity = "1";
+  popup.style.transition = "opacity 1s ease";
+
   document.body.appendChild(popup);
 
+  // 2 sec me fade out
   setTimeout(() => {
-    popup.style.opacity = "0.0";
-  }, 1800);
+    popup.style.opacity = "0";
+  }, 2000);
 
+  // 3 sec baad remove popup aur login page dikhao
   setTimeout(() => {
-    if (document.getElementById('popup')) document.getElementById('popup').remove();
-    // reload to reset UI (optional)
+    popup.remove();
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'flex';
+  }, 3000);
+
+  // 5 sec baad refresh
+  setTimeout(() => {
     location.reload();
-  }, 2400);
+  }, 1000);
 }
+
 </script>
 </body>
 </html>
