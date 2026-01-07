@@ -372,16 +372,24 @@ document.getElementById("results").innerHTML = `
 }
 /* ✅ FINAL SUBMIT FUNCTION */
 function submitToSheet() {
+  console.log("submitToSheet called");
+
   if (!window.resultData) {
     alert("Result data missing");
+    console.error("window.resultData is undefined");
     return;
   }
 
-  if (sessionStorage.getItem("submitted")) return;
+  if (sessionStorage.getItem("submitted")) {
+    alert("Already submitted (sessionStorage)");
+    console.log("Submission blocked: already submitted flag present");
+    return;
+  }
+
+  // mark to avoid double-submits
   sessionStorage.setItem("submitted", "true");
 
-  const formURL =
-    "https://docs.google.com/forms/d/e/1FAIpQLScNrPylqWy3C2y99TZCn0GlKPN4Ja-4usc9FAMHd7T2xQLwcA/formResponse";
+  const formURL = "https://docs.google.com/forms/d/e/1FAIpQLScNrPylqWy3C2y99TZCn0GlKPN4Ja-4usc9FAMHd7T2xQLwcA/formResponse";
 
   const params = new URLSearchParams();
   params.append("entry.1217074693", window.resultData.name || "");
@@ -391,31 +399,62 @@ function submitToSheet() {
   params.append("entry.947163117", window.resultData.totalWords || "");
   params.append("entry.1771123525", window.resultData.correctWords || "");
 
-  /* ✅ MOST RELIABLE SUBMIT */
-  navigator.sendBeacon(formURL, params);
+  // disable button so user can't spam
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Submitting...";
 
-  /* ✅ SUCCESS POPUP */
-  const popup = document.createElement("div");
+  // Try navigator.sendBeacon first (best for unloads/reloads)
+  try {
+    if (navigator.sendBeacon) {
+      const ok = navigator.sendBeacon(formURL, params);
+      console.log("sendBeacon invoked, returned:", ok);
+      showSuccessAndReload();
+      return;
+    } else {
+      console.log("navigator.sendBeacon not available — falling back to fetch");
+    }
+  } catch (err) {
+    console.warn("sendBeacon threw:", err);
+  }
+
+  // Fallback: fetch with no-cors (won't return readable response, but will hit endpoint)
+  fetch(formURL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: params.toString()
+  }).then(() => {
+    console.log("fetch (no-cors) completed (promise resolved)");
+    showSuccessAndReload();
+  }).catch((err) => {
+    console.error("fetch error:", err);
+    // allow retry by clearing submitted flag and enabling button
+    sessionStorage.removeItem("submitted");
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit Result";
+    alert("Submit failed — check console for details");
+  });
+}
+
+/* UI helper */
+function showSuccessAndReload() {
+  const popup = document.createElement('div');
+  popup.id = "popup";
   popup.innerText = "✅ Successfully Submitted!";
-  popup.style.cssText = `
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(to right, #22c55e, #3b82f6);
-    color: white;
-    padding: 20px 30px;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 10px;
-    z-index: 9999;
-  `;
   document.body.appendChild(popup);
 
   setTimeout(() => {
-    popup.remove();
+    popup.style.opacity = "0.0";
+  }, 1800);
+
+  setTimeout(() => {
+    if (document.getElementById('popup')) document.getElementById('popup').remove();
+    // reload to reset UI (optional)
     location.reload();
-  }, 2500);
+  }, 2400);
 }
 </script>
 </body>
